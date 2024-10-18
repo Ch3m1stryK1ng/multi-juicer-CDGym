@@ -1,38 +1,52 @@
+# Check if Ingress is enabled in the Helm values file
 {{- if .Values.ingress.enabled -}}
+# Define local variables for use within this template
 {{- $fullName := include "multi-juicer.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+
+# Specify the API version and resource type for the Ingress
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  # Use a generated full name for the Ingress
   name: {{ $fullName }}
+  # Include labels from a predefined template
   labels:
     {{- include "multi-juicer.juice-balancer.labels" . | nindent 4 }}
+  # Conditionally include annotations if they are defined in the Helm values
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.ingress.ingressClassName }}
+  # Set the ingress class name if specified
+  {{- if .Values.ingress.ingressClassName }}
   ingressClassName: {{ .Values.ingress.ingressClassName }}
-{{- end }}  
-{{- if .Values.ingress.tls }}
+  {{- end }}
+  # Configure TLS if enabled
+  {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls }}
     - hosts:
+      # Loop through hosts defined for TLS and quote each
       {{- range .hosts }}
         - {{ . | quote }}
       {{- end }}
+      # Specify the secret name that contains the TLS cert
       secretName: {{ .secretName }}
   {{- end }}
-{{- end }}
+  {{- end }}
+  # Define rules for routing traffic to the service
   rules:
   {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
+        # Define paths that this host will serve
         {{- range .paths }}
           - path: {{ . }}
             pathType: ImplementationSpecific
+            # Backend service and port configuration
             backend:
               service:
                 name: juice-balancer

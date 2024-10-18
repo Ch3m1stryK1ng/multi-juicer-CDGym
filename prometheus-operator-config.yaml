@@ -1,0 +1,23 @@
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    service:
+      type: LoadBalancer
+      port: 9090
+
+grafana:
+  service:
+    type: LoadBalancer
+    port: 80
+  sidecar:
+    dashboards:
+      searchNamespace: ALL
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: "http://loki-gateway.monitoring.svc.cluster.local/" 
+      jsonData:
+        httpHeaderName1: "X-Scope-OrgId"
+      secureJsonData:
+        httpHeaderValue1: "foo"

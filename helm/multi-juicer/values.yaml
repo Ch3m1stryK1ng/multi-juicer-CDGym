@@ -33,7 +33,7 @@ balancer:
     # -- Changes the cookies name used to identify teams. Note will automatically be prefixed with "__Secure-" when balancer.cookie.secure is set to `true`
     name: balancer
     # -- Set this to a fixed random alpha-numeric string (recommended length 24 chars). If not set this gets randomly generated with every helm upgrade, each rotation invalidates all active cookies / sessions requiring users to login again.
-    cookieParserSecret: null
+    cookieParserSecret: sFbkN35su9Mh7uoxljW1tgSi
   repository: ghcr.io/juice-shop/multi-juicer/juice-balancer
   tag: null
   # -- Number of replicas of the juice-balancer deployment
